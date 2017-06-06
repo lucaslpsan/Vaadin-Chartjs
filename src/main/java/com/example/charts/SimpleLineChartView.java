@@ -7,15 +7,13 @@ import com.byteowls.vaadin.chartjs.ChartJs;
 import com.byteowls.vaadin.chartjs.config.LineChartConfig;
 import com.byteowls.vaadin.chartjs.data.Dataset;
 import com.byteowls.vaadin.chartjs.data.LineDataset;
-import com.example.AbstractChartView;
-import com.example.DemoUtils;
+import com.example.*;
 import com.byteowls.vaadin.chartjs.options.InteractionMode;
 import com.byteowls.vaadin.chartjs.options.Position;
 import com.byteowls.vaadin.chartjs.options.scale.Axis;
 import com.byteowls.vaadin.chartjs.options.scale.CategoryScale;
 import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.byteowls.vaadin.chartjs.utils.ColorUtils;
-import com.example.JsonBancoService;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
@@ -29,14 +27,14 @@ public class SimpleLineChartView extends AbstractChartView {
     private static final long serialVersionUID = -1625380456901210625L;
 
     @Autowired
-    private JsonBancoService jsonBancoService;
+    private BancoService BancoService;
 
     @Override
     public Component getChart() {
         LineChartConfig lineConfig = new LineChartConfig();
 
         List<String> lbs = new ArrayList<>();
-        JSONArray jsonArray = new JSONArray(jsonBancoService.findJson());
+        JSONArray jsonArray = new JSONArray(BancoService.findJson());
 
         for(int i = 0; i < jsonArray.length(); i++){
             lbs.add(jsonArray.getJSONObject(i).get("data").toString());
@@ -45,7 +43,7 @@ public class SimpleLineChartView extends AbstractChartView {
         lineConfig.data()
             //.labels("01/01/1991", "01/02/1991", "01/03/1991", "01/04/1991", "01/05/1991", "01/06/1991", "01/07/1991")
             .labelsAsList(lbs)
-            .addDataset(new LineDataset().label(" Saldos em R$ milhões").fill(false))
+            .addDataset(new LineDataset().label(BancoService.findDataset()).fill(false))
             //.addDataset(new LineDataset().label("My Second dataset").fill(false))
             //.addDataset(new LineDataset().label("Hidden dataset").hidden(true))
             .and()
@@ -53,7 +51,7 @@ public class SimpleLineChartView extends AbstractChartView {
             .responsive(true)
             .title()
             .display(true)
-            .text("Dívida Líquida do Setor Público")
+            .text(BancoService.findTitulo())
             .and()
         .tooltips()
             .mode(InteractionMode.INDEX)
@@ -70,7 +68,7 @@ public class SimpleLineChartView extends AbstractChartView {
                     .display(true)
                     .labelString("Data")
                     .and()
-                .position(Position.TOP))
+                .position(Position.BOTTOM))
         .add(Axis.Y, new LinearScale()
                 .display(true)
                 .scaleLabel()

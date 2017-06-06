@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.charts.*;
+import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
@@ -23,16 +24,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.java2html.converter.JavaSource2HTMLConverter;
@@ -87,6 +78,9 @@ public class ChartJsDemoUI extends UI {
     @Autowired
     private Environment env;
 
+    @Autowired
+    PrincipalService principalService;
+
     private Label codeLabel;
 
     private Link codeLink;
@@ -117,6 +111,21 @@ public class ChartJsDemoUI extends UI {
         CssLayout infoBar = new CssLayout(info);
         infoBar.setWidth(100, Unit.PERCENTAGE);
         infoBar.addStyleName("addon-info-bar");
+        //vl.addComponent(infoBar); Lucas, comentei
+
+        ComboBox combobox = new ComboBox("Selecione o orgão:");
+
+        //Lucas, inseri o combobox aqui
+        combobox.addItem("Selecione");
+        combobox.addItems(principalService.findNomeOrgao());
+
+        combobox.setWidth(45.0f, Unit.PERCENTAGE);
+
+        combobox.setNullSelectionAllowed(false);
+
+        combobox.addValueChangeListener(valueChangeEvent -> Notification.show("Escolheu ", Notification.Type.TRAY_NOTIFICATION));
+
+        infoBar.addComponent(combobox);
         vl.addComponent(infoBar);
 
         HorizontalSplitPanel splitContentCode = new HorizontalSplitPanel();
