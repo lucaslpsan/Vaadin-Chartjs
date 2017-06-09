@@ -7,16 +7,22 @@ import com.byteowls.vaadin.chartjs.ChartJs;
 import com.byteowls.vaadin.chartjs.config.BarChartConfig;
 import com.byteowls.vaadin.chartjs.data.BarDataset;
 import com.byteowls.vaadin.chartjs.data.Dataset;
+import com.byteowls.vaadin.chartjs.options.elements.Rectangle;
 import com.example.AbstractChartView;
+import com.example.BancoService;
 import com.example.DemoUtils;
 import com.byteowls.vaadin.chartjs.options.InteractionMode;
 import com.byteowls.vaadin.chartjs.options.Position;
 import com.byteowls.vaadin.chartjs.options.scale.Axis;
 import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.byteowls.vaadin.chartjs.utils.ColorUtils;
+import com.example.ObjetoUnico;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
+import org.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
 @SpringView
@@ -24,21 +30,23 @@ public class MultiAxisBarChartView extends AbstractChartView {
 
     private static final long serialVersionUID = 934342877200303954L;
 
+    ObjetoUnico objetoUnico = (ObjetoUnico) UI.getCurrent().getSession().getAttribute("objetoConjunto");
+
     @Override
     public Component getChart() {
         BarChartConfig barConfig = new BarChartConfig();
+
+        List<String> lbs = new ArrayList<>();
+        JSONArray jsonArray = new JSONArray(objetoUnico.getJson());
+
+        for(int i = 0; i < jsonArray.length(); i++){
+            lbs.add(jsonArray.getJSONObject(i).get("data").toString());
+        }
+
         barConfig.
             data()
-                .labels("January", "February", "March", "April", "May", "June", "July")
-                .addDataset(
-                        new BarDataset().backgroundColor("rgba(220,220,220,0.5)").label("Dataset 1").yAxisID("y-axis-1"))
-                .addDataset(
-                        new BarDataset().backgroundColor("rgba(151,187,205,0.5)").label("Dataset 2").yAxisID("y-axis-2").hidden(true))
-                .addDataset(
-                        new BarDataset().backgroundColor(
-                        		ColorUtils.randomColor(0.7), ColorUtils.randomColor(0.7), ColorUtils.randomColor(0.7), 
-                        		ColorUtils.randomColor(0.7), ColorUtils.randomColor(0.7), ColorUtils.randomColor(0.7), 
-                        		ColorUtils.randomColor(0.7)).label("Dataset 3").yAxisID("y-axis-1"))
+                .labelsAsList(lbs)
+                .addDataset(new BarDataset().backgroundColor("rgba(220,220,220,0.5)").label(objetoUnico.getDataset()).yAxisID("y-axis-1"))
                 .and();
         barConfig.
             options()
@@ -50,11 +58,17 @@ public class MultiAxisBarChartView extends AbstractChartView {
                     .and()
                 .title()
                     .display(true)
-                    .text("Chart.js Bar Chart - Multi Axis")
+                    .text(objetoUnico.getTitulo())
+                    .and()
+                .elements()
+                    .rectangle()
+                        .borderWidth(2)
+                        .borderColor("rgb(255, 255, 0)")
+                        .borderSkipped(Rectangle.RectangleEdge.BOTTOM)
+                        .and()
                     .and()
                 .scales()
                     .add(Axis.Y, new LinearScale().display(true).position(Position.LEFT).id("y-axis-1"))
-                    .add(Axis.Y, new LinearScale().display(true).position(Position.RIGHT).id("y-axis-2").gridLines().drawOnChartArea(false).and())
                     .and()
                .done();
         
@@ -63,9 +77,11 @@ public class MultiAxisBarChartView extends AbstractChartView {
             BarDataset lds = (BarDataset) ds;
             List<Double> data = new ArrayList<>();
             for (int i = 0; i < labels.size(); i++) {
-                data.add((double) (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100));
+                data.add(Double.parseDouble(jsonArray.getJSONObject(i).get("valor").toString()));
             }
             lds.dataAsList(data);
+            lds.borderColor(ColorUtils.randomColor(0.3));
+            lds.backgroundColor(ColorUtils.randomColor(0.5));
         }
         
         ChartJs chart = new ChartJs(barConfig);

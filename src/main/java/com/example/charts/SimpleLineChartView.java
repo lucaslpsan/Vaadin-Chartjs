@@ -14,9 +14,11 @@ import com.byteowls.vaadin.chartjs.options.scale.Axis;
 import com.byteowls.vaadin.chartjs.options.scale.CategoryScale;
 import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.byteowls.vaadin.chartjs.utils.ColorUtils;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,24 +28,27 @@ public class SimpleLineChartView extends AbstractChartView {
 
     private static final long serialVersionUID = -1625380456901210625L;
 
-    @Autowired
-    private BancoService BancoService;
+    ObjetoUnico objetoUnico = (ObjetoUnico) UI.getCurrent().getSession().getAttribute("objetoConjunto");
 
     @Override
     public Component getChart() {
         LineChartConfig lineConfig = new LineChartConfig();
 
+        //String ls = UI.getCurrent().getSession().getAttribute("idConjunto").toString();
+        //int seqConjunto = Integer.parseInt(UI.getCurrent().getSession().getAttribute("idConjunto").toString());
+
         List<String> lbs = new ArrayList<>();
-        JSONArray jsonArray = new JSONArray(BancoService.findJson());
+        JSONArray jsonArray = new JSONArray(objetoUnico.getJson());
 
         for(int i = 0; i < jsonArray.length(); i++){
             lbs.add(jsonArray.getJSONObject(i).get("data").toString());
         }
 
+
         lineConfig.data()
             //.labels("01/01/1991", "01/02/1991", "01/03/1991", "01/04/1991", "01/05/1991", "01/06/1991", "01/07/1991")
             .labelsAsList(lbs)
-            .addDataset(new LineDataset().label(BancoService.findDataset()).fill(false))
+            .addDataset(new LineDataset().label(objetoUnico.getDataset()).fill(false))
             //.addDataset(new LineDataset().label("My Second dataset").fill(false))
             //.addDataset(new LineDataset().label("Hidden dataset").hidden(true))
             .and()
@@ -51,7 +56,7 @@ public class SimpleLineChartView extends AbstractChartView {
             .responsive(true)
             .title()
             .display(true)
-            .text(BancoService.findTitulo())
+            .text(objetoUnico.getTitulo())
             .and()
         .tooltips()
             .mode(InteractionMode.INDEX)

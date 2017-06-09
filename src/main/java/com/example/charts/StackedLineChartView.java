@@ -7,15 +7,22 @@ import com.byteowls.vaadin.chartjs.ChartJs;
 import com.byteowls.vaadin.chartjs.config.LineChartConfig;
 import com.byteowls.vaadin.chartjs.data.Dataset;
 import com.byteowls.vaadin.chartjs.data.LineDataset;
+import com.byteowls.vaadin.chartjs.options.Position;
+import com.byteowls.vaadin.chartjs.utils.ColorUtils;
 import com.example.AbstractChartView;
+import com.example.BancoService;
 import com.example.DemoUtils;
 import com.byteowls.vaadin.chartjs.options.InteractionMode;
 import com.byteowls.vaadin.chartjs.options.scale.Axis;
 import com.byteowls.vaadin.chartjs.options.scale.CategoryScale;
 import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
+import com.example.ObjetoUnico;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
+import org.json.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
 @SpringView
@@ -23,21 +30,28 @@ public class StackedLineChartView extends AbstractChartView {
 
     private static final long serialVersionUID = -9142435970343490721L;
 
+    ObjetoUnico objetoUnico = (ObjetoUnico) UI.getCurrent().getSession().getAttribute("objetoConjunto");
+
     @Override
     public Component getChart() {
         LineChartConfig lineConfig = new LineChartConfig();
+
+        List<String> lbs = new ArrayList<>();
+        JSONArray jsonArray = new JSONArray(objetoUnico.getJson());
+
+        for(int i = 0; i < jsonArray.length(); i++){
+            lbs.add(jsonArray.getJSONObject(i).get("data").toString());
+        }
+
         lineConfig.data()
-            .labels("January", "February", "March", "April", "May", "June", "July")
-            .addDataset(new LineDataset().label("My First dataset").borderColor(DemoUtils.RGB_RED).backgroundColor(DemoUtils.RGB_RED))
-            .addDataset(new LineDataset().label("My Second dataset").borderColor(DemoUtils.RGB_BLUE).backgroundColor(DemoUtils.RGB_BLUE))
-            .addDataset(new LineDataset().label("My Third dataset").borderColor(DemoUtils.RGB_GREEN).backgroundColor(DemoUtils.RGB_GREEN))
-            .addDataset(new LineDataset().label("My Third dataset").borderColor(DemoUtils.RGB_YELLOW).backgroundColor(DemoUtils.RGB_YELLOW))
+            .labelsAsList(lbs)
+            .addDataset(new LineDataset().label(objetoUnico.getDataset()).borderColor(DemoUtils.RGB_RED).backgroundColor(DemoUtils.RGB_RED))
             .and()
         .options()
             .responsive(true)
             .title()
                 .display(true)
-                .text("Chart.js Line Chart - Stacked Line")
+                .text(objetoUnico.getTitulo())
                 .and()
             .tooltips()
                 .mode(InteractionMode.INDEX)
@@ -49,14 +63,16 @@ public class StackedLineChartView extends AbstractChartView {
             .add(Axis.X, new CategoryScale()
                     .scaleLabel()
                         .display(true)
-                        .labelString("Month")
-                        .and())
+                        .labelString("Data")
+                        .and()
+                    .position(Position.BOTTOM))
             .add(Axis.Y, new LinearScale()
                     .stacked(true)
                     .scaleLabel()
                         .display(true)
-                        .labelString("Value")
-                        .and())
+                        .labelString("Valor")
+                        .and()
+                    .position(Position.RIGHT))
             .and()
         .done();
         
@@ -66,9 +82,11 @@ public class StackedLineChartView extends AbstractChartView {
             LineDataset lds = (LineDataset) ds;
             List<Double> data = new ArrayList<>();
             for (int i = 0; i < labels.size(); i++) {
-                data.add((double) (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100));
+                data.add(Double.parseDouble(jsonArray.getJSONObject(i).get("valor").toString()));
             }
             lds.dataAsList(data);
+            lds.borderColor(ColorUtils.randomColor(0.3));
+            lds.backgroundColor(ColorUtils.randomColor(0.5));
         }
 
         ChartJs chart = new ChartJs(lineConfig);
