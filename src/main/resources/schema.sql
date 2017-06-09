@@ -59,3 +59,6 @@ VALUES (1, 1, 25226, 'Quantidade de transações com débito direto', 'Quantidad
 
 INSERT INTO public.tb_conjunto_dados
 VALUES (2, 1, 24930, 'Quantidade de sedes de instituições autorizadas a funcionar do segmento bancário no Brasil', 'Quantidade em unidades', '08-06-2017', '01-01-2016', '01-01-2005', '[{"data":"01/01/2005","valor":"137"},{"data":"01/01/2006","valor":"143"},{"data":"01/01/2007","valor":"144"},{"data":"01/01/2008","valor":"152"},{"data":"01/01/2009","valor":"155"},{"data":"01/01/2010","valor":"155"},{"data":"01/01/2011","valor":"159"},{"data":"01/01/2012","valor":"159"},{"data":"01/01/2013","valor":"156"},{"data":"01/01/2014","valor":"153"},{"data":"01/01/2015","valor":"153"},{"data":"01/01/2016","valor":"154"}]');
+
+INSERT INTO public.tb_conjunto_dados
+VALUES (3, 1, 25229, 'Valor total das transações com cartões de crédito', 'Milhões de reais', '09-06-2017', '01-01-2010', '01-01-2015', '[{"data":"01/01/2010","valor":"332095.57"},{"data":"01/01/2011","valor":"400637.88"},{"data":"01/01/2012","valor":"465463.92"},{"data":"01/01/2013","valor":"534001.24"},{"data":"01/01/2014","valor":"593875.68"},{"data":"01/01/2015","valor":"653441.04"}]');
